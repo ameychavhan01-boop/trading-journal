@@ -58,15 +58,15 @@ The same steps work on an iPhone.
 Tap **Quick trade** (next to Add trade, or in the menu; on a phone: **More → Quick trade**).
 
 **First time only – setup page** (change it any time with **Edit setup**):
-journal, timeframe, fixed target profit (e.g. ₹5,000), daily loss limit in ₹, your R:R
-choices (1:2, 1:2.5, 1:3 – add your own), your assets (BTCUSD and ETHUSD are ready, add more),
-and an optional strategy.
+journal, timeframe, fixed target profit (e.g. ₹5,000), daily loss limit in ₹, your assets
+(BTCUSD and ETHUSD are ready, add more) and an optional strategy.
 
 **Each trade:**
-1. Tap the asset and R:R (they stay selected).
-2. Type **Entry price** and **Target price**. Long/Short, stop-loss price and size are
-   calculated so a target hit is always your fixed profit (e.g. +₹5,000) and a stop hit is
-   profit ÷ R:R (e.g. −₹2,000 at 1:2.5).
+1. Tap the asset (it stays selected).
+2. Type **Entry**, **Stop loss** and **Target** prices. Everything else is automatic:
+   Long/Short, **R:R** (target distance ÷ stop distance), size, the profit if the target is hit
+   (always your fixed amount, e.g. +₹5,000) and the loss if the stop is hit (profit ÷ R:R,
+   e.g. −₹2,055 at 1 : 2.43).
 3. **Entry:** tap the day, the hour, AM/PM and the minute. Minute buttons follow your
    timeframe (15m and higher: :00 :15 :30 :45, smaller: every 5 minutes); −1 / +1 for an
    exact minute.
