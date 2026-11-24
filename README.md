@@ -53,7 +53,31 @@ The same steps work on an iPhone.
 - **Settings → Money** to change the $ → ₹ rate (default ₹85) and the Delta contract sizes
   (BTCUSD = 0.001 BTC, ETHUSD = 0.01 ETH).
 
-## 4. Back up your data (please do this every week)
+## 4. Quick trade (fast backtesting with fixed ₹ profit)
+
+Tap **Quick trade** (next to Add trade, or in the menu; on a phone: **More → Quick trade**).
+
+**First time only – setup page** (change it any time with **Edit setup**):
+journal, timeframe, fixed target profit (e.g. ₹5,000), daily loss limit in ₹, your R:R
+choices (1:2, 1:2.5, 1:3 – add your own), your assets (BTCUSD and ETHUSD are ready, add more),
+and an optional strategy.
+
+**Each trade:**
+1. Tap the asset and R:R (they stay selected).
+2. Type **Entry price** and **Target price**. Long/Short, stop-loss price and size are
+   calculated so a target hit is always your fixed profit (e.g. +₹5,000) and a stop hit is
+   profit ÷ R:R (e.g. −₹2,000 at 1:2.5).
+3. **Entry:** tap the day, the hour, AM/PM and the minute. Minute buttons follow your
+   timeframe (15m and higher: :00 :15 :30 :45, smaller: every 5 minutes); −1 / +1 for an
+   exact minute.
+4. **Exit:** tap a quick duration (+15m … +1 day) or pick the day and time the same way.
+5. Tap **Target hit**, **Stop loss hit**, or **Exited in between** (type the exit price → Save).
+
+The day buttons start from your last saved trade. The small arrow under the entry days
+switches direction: **forward** (old → new dates) or **backward** (new → old dates), for
+whichever way you move through the chart in Bar Replay.
+
+## 5. Back up your data (please do this every week)
 
 Because everything lives only on the iPad, deleting the app, clearing Safari data, or losing
 the iPad would delete your journal. The app shows a **"Backup due"** banner when your last
@@ -68,7 +92,7 @@ including screenshots.
 **Restore from backup** → choose the backup file → **Replace and restore**.
 This replaces everything currently in the app with the backup.
 
-## 5. Privacy features
+## 6. Privacy features
 
 - **Journal PIN:** Settings → Journals → **Lock**. The journal then needs its 4–6 digit PIN
   each time the app is opened.
@@ -77,7 +101,7 @@ This replaces everything currently in the app with the backup.
   the first time).
   If you forget the app PIN, restoring a backup turns Show mode off.
 
-## 6. Exports
+## 7. Exports
 
 - **Export CSV** (Trades page and Dashboard): opens in Excel, Numbers or Google Sheets.
   The Trades page exports exactly what your current filters show.

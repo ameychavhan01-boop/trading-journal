@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { Camera, AlertTriangle, Plus, Save } from 'lucide-react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Camera, AlertTriangle, Plus, Save, Zap } from 'lucide-react';
 import { PageHeader } from '../components/Layout';
 import { DateTime12, Seg, ShotSlot } from '../components/inputs';
 import { useApp } from '../state/AppContext';
@@ -504,6 +504,11 @@ export default function TradeForm() {
         subtitle={journal?.name}
         actions={
           <>
+            {!id && (
+              <Link className="btn" to="/quick">
+                <Zap size={17} /> Quick trade
+              </Link>
+            )}
             <button className="btn" onClick={comingSoon}>
               <Camera size={17} /> Auto-fill from screenshot
             </button>

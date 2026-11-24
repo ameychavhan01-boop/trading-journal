@@ -1088,3 +1088,86 @@ ul.rules {
 .list-row:last-child {
   border-bottom: none;
 }
+
+/* ---------- Quick trade: date strip & time grid ---------- */
+
+.date-strip {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+.day-chip {
+  min-height: 52px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  cursor: pointer;
+  padding: 0 2px;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.day-chip .tiny {
+  color: var(--text2);
+}
+.day-chip.weekend .tiny {
+  color: var(--warning);
+}
+.day-chip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.day-chip.on .tiny {
+  color: var(--accent-text);
+}
+.day-chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+.time-btn {
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+.time-btn.min {
+  min-width: 52px;
+}
+.time-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+.result-btn {
+  min-height: 64px;
+  font-size: 16px;
+  background: var(--card2);
+  flex-direction: column;
+  gap: 2px;
+}
+.result-btn.win {
+  background: var(--profit-soft);
+  color: var(--profit);
+}
+.result-btn.lose {
+  background: var(--loss-soft);
+  color: var(--loss);
+}
