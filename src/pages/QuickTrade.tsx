@@ -18,8 +18,6 @@ import { DAY, fmtDate, fmtTime, istParts, startOfDayIST } from '../lib/time';
 const DEFAULT_QUICK: QuickSetup = {
   done: false,
   targetInr: 5000,
-  rrList: [2, 2.5, 3],
-  rr: 2.5,
   timeframe: '1H',
   assets: [
     { symbol: 'BTCUSD', market: 'crypto' },
@@ -29,7 +27,6 @@ const DEFAULT_QUICK: QuickSetup = {
   dir: 'fwd',
 };
 
-const rrLabel = (rr: number) => `1:${+rr.toFixed(2)}`;
 
 export default function QuickTrade() {
   const { settings } = useApp();
@@ -50,9 +47,6 @@ function SetupPage({ setup, onDone }: { setup: QuickSetup; onDone: () => void })
   const [journalId, setJournalId] = useState(defaultJournal?.id ?? '');
   const journal = accessible.find((j) => j.id === journalId);
   const [target, setTarget] = useState(String(setup.targetInr));
-  const [rrList, setRrList] = useState<number[]>(setup.rrList);
-  const [rr, setRr] = useState(setup.rr);
-  const [newRr, setNewRr] = useState('');
   const [tf, setTf] = useState(setup.timeframe ?? '');
   const [strategyId, setStrategyId] = useState(setup.strategyId ?? '');
   const [assets, setAssets] = useState(setup.assets);
@@ -66,7 +60,6 @@ function SetupPage({ setup, onDone }: { setup: QuickSetup; onDone: () => void })
     const t = parseNum(target);
     if (!journal) return toast('Choose a journal (create one in Settings first)');
     if (!t || t <= 0) return toast('Enter your target profit in ₹');
-    if (!rrList.length) return toast('Add at least one R:R');
     if (!assets.length) return toast('Add at least one asset');
     const limitInr = parseNum(dailyLimit) ?? 0;
     await saveJournal({ ...journal, dailyLossLimit: limitInr > 0 ? +(limitInr / settings.usdInr).toFixed(2) : 0, dailyLossUnit: '$' });
@@ -76,8 +69,6 @@ function SetupPage({ setup, onDone }: { setup: QuickSetup; onDone: () => void })
         done: true,
         journalId: journal.id,
         targetInr: t,
-        rrList,
-        rr: rrList.includes(rr) ? rr : rrList[0],
         timeframe: tf || undefined,
         strategyId: strategyId || undefined,
         assets,
@@ -87,8 +78,6 @@ function SetupPage({ setup, onDone }: { setup: QuickSetup; onDone: () => void })
     toast('Setup saved');
     onDone();
   };
-
-  const tNum = parseNum(target) ?? 0;
 
   return (
     <div className="page" style={{ maxWidth: 820 }}>
@@ -124,44 +113,6 @@ function SetupPage({ setup, onDone }: { setup: QuickSetup; onDone: () => void })
           <div className="field">
             <label>Daily loss limit (₹) – 0 = no limit</label>
             <input className="input" inputMode="decimal" value={dailyLimit} placeholder="e.g. 6000" onChange={(e) => setDailyLimit(e.target.value)} />
-          </div>
-          <div className="field span-all">
-            <label>Risk to reward choices – tap one to make it the default</label>
-            <div className="row wrap" style={{ gap: 8 }}>
-              {rrList.map((x) => (
-                <span key={x} className={`chip ${rr === x ? 'on' : ''}`} onClick={() => setRr(x)}>
-                  {rrLabel(x)}
-                  <span className="faint small">loss {fmtInr(-(tNum / x))}</span>
-                  <button
-                    type="button"
-                    aria-label={`Remove ${rrLabel(x)}`}
-                    style={{ background: 'none', border: 'none', color: 'inherit', padding: 4, cursor: 'pointer' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setRrList(rrList.filter((y) => y !== x));
-                    }}
-                  >
-                    <X size={14} />
-                  </button>
-                </span>
-              ))}
-              <span className="row" style={{ gap: 6 }}>
-                <span className="muted">1 :</span>
-                <input className="input" style={{ width: 80 }} inputMode="decimal" placeholder="4" value={newRr} onChange={(e) => setNewRr(e.target.value)} />
-                <button
-                  type="button"
-                  className="btn icon"
-                  aria-label="Add R:R"
-                  onClick={() => {
-                    const v = parseNum(newRr);
-                    if (v && v > 0 && !rrList.includes(v)) setRrList([...rrList, v].sort((a, b) => a - b));
-                    setNewRr('');
-                  }}
-                >
-                  <Plus size={18} />
-                </button>
-              </span>
-            </div>
           </div>
           <div className="field span-all">
             <label>Assets</label>
@@ -253,6 +204,7 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
   const rate = settings.usdInr;
 
   const [entry, setEntry] = useState('');
+  const [stop, setStop] = useState('');
   const [target, setTarget] = useState('');
   const [customOpen, setCustomOpen] = useState(false);
   const [customExit, setCustomExit] = useState('');
@@ -277,21 +229,35 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
   }, [all, anchor]);
 
   const patch = (p: Partial<QuickSetup>) => updateSettings({ quick: { ...setup, ...p } });
+  const rrText = (x: number) => `1 : ${x.toFixed(2).replace(/\.?0+$/, '')}`;
 
-  // ---- calculations ----
+  // ---- calculations (all automatic from the 3 prices) ----
   const e = parseNum(entry);
+  const st = parseNum(stop);
   const tg = parseNum(target);
-  const valid = e != null && tg != null && e > 0 && tg > 0 && tg !== e;
-  const side = valid ? (tg! > e! ? 'long' : 'short') : undefined;
+  const filled = e != null && st != null && tg != null && e > 0 && st > 0 && tg > 0;
+  const side = filled && st !== e ? (st! < e! ? 'long' : 'short') : undefined;
   const dir = side === 'short' ? -1 : 1;
-  const dist = valid ? Math.abs(tg! - e!) : 0;
-  const sl = valid ? e! - (dir * dist) / setup.rr : undefined;
-  const slOk = sl != null && sl > 0;
+  const sideOk = !!side && (side === 'long' ? tg! > e! : tg! < e!);
+  const valid = filled && sideOk;
+  const priceError = !filled
+    ? ''
+    : !side
+      ? 'Stop loss cannot be the same as entry.'
+      : !sideOk
+        ? side === 'long'
+          ? 'Stop loss is below entry (Long), so the target must be ABOVE entry.'
+          : 'Stop loss is above entry (Short), so the target must be BELOW entry.'
+        : '';
+  const dist = valid ? Math.abs(tg! - e!) : 0; // reward distance
+  const riskDist = valid ? Math.abs(e! - st!) : 0; // risk distance
+  const rr = valid ? dist / riskDist : 0; // risk : reward = 1 : rr
+  const sl = valid ? st! : undefined;
   const targetNative = asset?.market === 'stock' ? setup.targetInr : setup.targetInr / rate; // profit in trade currency
   const units = valid ? targetNative / dist : 0;
   const cs = asset ? contractSizeFor({ marketType: asset.market, symbol: asset.symbol }, ctx) : 1;
   const qty = units / cs;
-  const lossInr = setup.targetInr / setup.rr;
+  const lossInr = valid ? setup.targetInr / rr : 0;
   const cur = asset?.market === 'stock' ? '₹' : '$';
   const pnlInrAt = (x: number) => {
     const native = (x - e!) * units * dir;
@@ -335,8 +301,8 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
 
   const save = async (mode: 'target' | 'stop' | 'custom') => {
     setError('');
-    if (!valid) return setError('Type the entry price and the target price.');
-    if (!slOk) return setError('Stop loss would be below 0 – check the prices.');
+    if (!filled) return setError('Type the entry, stop loss and target prices.');
+    if (!valid) return setError(priceError);
     if (entryMs == null) return setError('Pick the entry date and time (hour and minute).');
     if (exitMs == null) return setError('Pick the exit date and time.');
     if (exitMs < entryMs) return setError('Exit time is before the entry time.');
@@ -361,7 +327,7 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
       strategyId: strategy?.id,
       entryTf: setup.timeframe,
       entry: e!,
-      stopLoss: r8(sl!),
+      stopLoss: sl!,
       target: tg!,
       exit: r8(exit),
       quantity: r8(qty),
@@ -379,6 +345,7 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
     // ready for the next trade: dates stay, everything else clears
     setAnchor(entryDay!);
     setEntry('');
+    setStop('');
     setTarget('');
     setCustomExit('');
     setCustomOpen(false);
@@ -419,25 +386,18 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
             <Plus size={15} />
           </button>
         </div>
-        <div className="row wrap" style={{ gap: 8 }}>
-          <span className="muted small" style={{ width: 54 }}>R:R</span>
-          {setup.rrList.map((x) => (
-            <button key={x} className={`chip ${setup.rr === x ? 'on' : ''}`} onClick={() => patch({ rr: x })}>
-              {rrLabel(x)}
-            </button>
-          ))}
-          <span className="faint small">
-            Target {fmtInr(setup.targetInr, true)} · Stop {fmtInr(-lossInr)}
-          </span>
-        </div>
       </div>
 
       {/* Prices */}
       <div className="card">
-        <div className="grid g-2" style={{ gap: 12 }}>
+        <div className="grid g-3" style={{ gap: 12 }}>
           <div className="field">
             <label>Entry price ({cur})</label>
             <input className="input" inputMode="decimal" value={entry} onChange={(ev) => setEntry(ev.target.value)} style={{ fontSize: 20, fontWeight: 600 }} />
+          </div>
+          <div className="field">
+            <label>Stop loss ({cur})</label>
+            <input className="input" inputMode="decimal" value={stop} onChange={(ev) => setStop(ev.target.value)} style={{ fontSize: 20, fontWeight: 600 }} />
           </div>
           <div className="field">
             <label>Target price ({cur})</label>
@@ -445,19 +405,20 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
           </div>
         </div>
         <div className="row wrap small" style={{ gap: 18, marginTop: 12, minHeight: 24 }}>
-          {valid && slOk ? (
+          {valid ? (
             <>
               <span className={`pill ${side === 'long' ? 'profit' : 'loss'}`}>{side === 'long' ? 'Long' : 'Short'}</span>
               <span>
-                <span className="muted">Stop loss </span>
-                <b>
-                  {cur === '₹' ? '₹' : ''}
-                  {fmtNum(sl!, sl! < 10 ? 4 : 2)}
-                </b>
+                <span className="muted">R:R </span>
+                <b style={{ fontSize: 16 }}>{rrText(rr)}</b>
               </span>
               <span>
-                <span className="muted">R:R </span>
-                <b>{rrLabel(setup.rr)}</b>
+                <span className="muted">Target hit </span>
+                <b className="profit">{fmtInr(setup.targetInr, true)}</b>
+              </span>
+              <span>
+                <span className="muted">Stop hit </span>
+                <b className="loss">{fmtInr(-lossInr)}</b>
               </span>
               <span>
                 <span className="muted">Size </span>
@@ -466,10 +427,10 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
                 </b>
               </span>
             </>
-          ) : valid ? (
-            <span className="loss">Stop loss would be below 0 – check the prices.</span>
+          ) : priceError ? (
+            <span className="loss">{priceError}</span>
           ) : (
-            <span className="faint">Type entry and target – side, stop loss and size are calculated for you.</span>
+            <span className="faint">Type entry, stop loss and target – Long/Short, R:R, profit, loss and size are calculated for you.</span>
           )}
         </div>
       </div>
@@ -539,7 +500,7 @@ function TradeScreen({ setup, onEditSetup }: { setup: QuickSetup; onEditSetup: (
             <span className="row" style={{ gap: 6 }}>
               <X size={20} /> Stop loss hit
             </span>
-            <span className="small">{fmtInr(-lossInr)}</span>
+            <span className="small">{valid ? fmtInr(-lossInr) : 'from your stop loss'}</span>
           </button>
           <button className="btn result-btn" onClick={() => setCustomOpen((v) => !v)}>
             <span className="row" style={{ gap: 6 }}>

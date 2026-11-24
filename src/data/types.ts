@@ -111,8 +111,8 @@ export interface QuickSetup {
   done: boolean; // setup page completed
   journalId?: string;
   targetInr: number; // fixed profit when the target is hit
-  rrList: number[]; // R:R choices, e.g. [2, 2.5, 3]
-  rr: number; // selected R:R
+  rrList?: number[]; // no longer used (R:R is now calculated from prices)
+  rr?: number; // no longer used
   timeframe?: string; // decides which minute buttons are shown
   strategyId?: string;
   assets: { symbol: string; market: MarketType }[];
