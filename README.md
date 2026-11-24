@@ -53,24 +53,7 @@ The same steps work on an iPhone.
 - **Settings → Money** to change the $ → ₹ rate (default ₹85) and the Delta contract sizes
   (BTCUSD = 0.001 BTC, ETHUSD = 0.01 ETH).
 
-## 4. Quick backtest (for TradingView Bar Replay)
-
-Menu → **Quick backtest** (on a phone: **More → Quick backtest**). Tip: on the iPad, open
-TradingView and this app side by side with **Split View**.
-
-1. Tap **Change** once to set the session: journal (use one of type *Backtest*), strategy,
-   market, symbol, timeframe and target in R (default 2R).
-2. For each trade in Bar Replay: set the date/time (it stays on the last one you used),
-   tap **Long** or **Short**, type **Entry** and **Stop loss**.
-3. Tap the result: **Hit target**, **Hit stop**, **Breakeven** or **Other exit** (type the price).
-   The trade is saved straight away and the form is ready for the next one.
-
-The target price is calculated from your R multiple (you can type your own), and the size is
-calculated from the journal's risk % so the P&L matches the R. The strategy checklist is ticked
-by default – open "Checklist, grade, mistakes, note" to untick a broken rule or add a grade.
-Made a mistake? Tap **Undo last**.
-
-## 5. Back up your data (please do this every week)
+## 4. Back up your data (please do this every week)
 
 Because everything lives only on the iPad, deleting the app, clearing Safari data, or losing
 the iPad would delete your journal. The app shows a **"Backup due"** banner when your last
@@ -85,7 +68,7 @@ including screenshots.
 **Restore from backup** → choose the backup file → **Replace and restore**.
 This replaces everything currently in the app with the backup.
 
-## 6. Privacy features
+## 5. Privacy features
 
 - **Journal PIN:** Settings → Journals → **Lock**. The journal then needs its 4–6 digit PIN
   each time the app is opened.
@@ -94,7 +77,7 @@ This replaces everything currently in the app with the backup.
   the first time).
   If you forget the app PIN, restoring a backup turns Show mode off.
 
-## 7. Exports
+## 6. Exports
 
 - **Export CSV** (Trades page and Dashboard): opens in Excel, Numbers or Google Sheets.
   The Trades page exports exactly what your current filters show.
