@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
   Check,
+  Zap,
 } from 'lucide-react';
 import { useApp } from '../state/AppContext';
 import { Modal } from './Modal';
@@ -27,6 +28,7 @@ const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutGrid, end: true },
   { to: '/trades', label: 'Trades', icon: List },
   { to: '/add', label: 'Add trade', icon: PlusCircle },
+  { to: '/quick', label: 'Quick trade', icon: Zap },
   { to: '/strategies', label: 'Strategies', icon: Lightbulb },
   { to: '/reviews', label: 'Reviews', icon: CalendarCheck },
   { to: '/compare', label: 'Compare', icon: Columns2, hideInShow: true },
@@ -89,7 +91,7 @@ export function Layout() {
         <Modal title="More" onClose={() => setMore(false)}>
           <div className="col" style={{ gap: 4 }}>
             {nav
-              .filter((n) => ['/strategies', '/compare', '/settings', '/add'].includes(n.to))
+              .filter((n) => ['/quick', '/strategies', '/compare', '/settings', '/add'].includes(n.to))
               .map((n) => (
                 <NavLink key={n.to} to={n.to} className="nav-item" onClick={() => setMore(false)}>
                   <n.icon size={18} />

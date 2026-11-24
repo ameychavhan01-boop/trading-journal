@@ -106,6 +106,20 @@ export interface ShowMode {
   journalId?: string;
 }
 
+/** One-time setup for the Quick trade screen (fixed-money backtesting). */
+export interface QuickSetup {
+  done: boolean; // setup page completed
+  journalId?: string;
+  targetInr: number; // fixed profit when the target is hit
+  rrList: number[]; // R:R choices, e.g. [2, 2.5, 3]
+  rr: number; // selected R:R
+  timeframe?: string; // decides which minute buttons are shown
+  strategyId?: string;
+  assets: { symbol: string; market: MarketType }[];
+  asset: string; // selected symbol
+  dir: 'fwd' | 'back'; // date strip direction
+}
+
 export interface Settings {
   theme: 'light' | 'dark';
   usdInr: number;
@@ -121,6 +135,7 @@ export interface Settings {
   showMode: ShowMode;
   seenWeeklyReview?: string; // key of last weekly review opened
   seenMonthlyReview?: string;
+  quick?: QuickSetup;
 }
 
 export interface BackupFile {

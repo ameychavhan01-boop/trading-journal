@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AlertTriangle, Calculator, Camera, Download, FileText, Plus, ArrowRight, Lock } from 'lucide-react';
+import { AlertTriangle, Calculator, Camera, Download, FileText, Plus, ArrowRight, Lock, Zap } from 'lucide-react';
 import { PageHeader } from '../components/Layout';
 import { Modal } from '../components/Modal';
 import { Money } from '../components/Money';
@@ -148,6 +148,9 @@ export default function Dashboard() {
             <button className="btn" onClick={comingSoon}>
               <Camera size={17} /> <span className="hide-mobile">Upload screenshot</span>
             </button>
+            <Link to="/quick" className="btn">
+              <Zap size={17} /> Quick trade
+            </Link>
             <Link to="/add" className="btn primary hide-mobile">
               <Plus size={17} /> Add trade
             </Link>
