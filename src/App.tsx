@@ -9,6 +9,7 @@ import Strategies from './pages/Strategies';
 import Reviews from './pages/Reviews';
 import Compare from './pages/Compare';
 import SettingsPage from './pages/Settings';
+import QuickBacktest from './pages/QuickBacktest';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="trades/:id" element={<TradeDetail />} />
             <Route path="add" element={<TradeForm />} />
             <Route path="edit/:id" element={<TradeForm />} />
+            <Route path="quick" element={<QuickBacktest />} />
             <Route path="strategies" element={<Strategies />} />
             <Route path="reviews" element={<Reviews />} />
             <Route path="compare" element={<Compare />} />
